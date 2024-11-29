@@ -1,4 +1,5 @@
 
+
 # AI Stock Trading Simulator
 
 Welcome to the AI Stock Trading Simulator! This project simulates a stock trading platform powered by AI, allowing users to make trades, manage a portfolio, and track virtual investments. It uses AI to analyze trends and provide trading suggestions, creating a fun and interactive way to explore the stock market without real financial risk.
@@ -29,14 +30,19 @@ Welcome to the AI Stock Trading Simulator! This project simulates a stock tradin
     
 
     
-    `git clone https://github.com/EvanMeyer36/AI-Stock-Simulator.git` 
+    `git clone https://github.com/EvanMeyer36/AI-Stock-Simulator.git`
+    
     `cd AI-Stock-Simulator ` 
     
-2.  **Install Dependencies**  
+3.  **Install Dependencies**  
     Make sure you have Python 3.8+ installed, then run:
 
     `pip install -r requirements.txt` 
     
+4. **Create ENV**
+   Make sure to create a .env file and include your OpenAI API key:
+
+   `OPENAI_API_KEY=<KEY>`  *Repace **< KEY >** with your key.*
 
 ----------
 
