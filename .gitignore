@@ -5,3 +5,4 @@ __pycache__/
 account_data.json
 .env
 tempCodeRunnerFile.py
+*.png
