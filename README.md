@@ -29,8 +29,8 @@ Welcome to the AI Stock Trading Simulator! This project simulates a stock tradin
     
 
     
-    `git clone https://github.com/EvanMeyer36/AI-Stock-Simulator.git
-    cd AI-Stock-Simulator ` 
+    `git clone https://github.com/EvanMeyer36/AI-Stock-Simulator.git` 
+    `cd AI-Stock-Simulator ` 
     
 2.  **Install Dependencies**  
     Make sure you have Python 3.8+ installed, then run:
