@@ -1,7 +1,7 @@
 import json
 import yfinance as yf
-from datetime import datetime
-
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 class Account:
     def __init__(self, initial_balance=10000, file_path="account_data.json"):
         self.file_path = file_path
@@ -114,13 +114,122 @@ class Account:
 
         return performance_details
 
+    def plot_stock_performance(self, ticker, period='1mo'):
+        """
+        Generate a stock performance graph for a specific ticker
+        
+        Args:
+            ticker (str): Stock ticker symbol
+            period (str): Time period for historical data (1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, max)
+        
+        Returns:
+            str: Path to saved graph image
+        """
+        try:
+            # Fetch stock data
+            stock = yf.Ticker(ticker)
+            hist = stock.history(period=period)
+            
+            if hist.empty:
+                print(f"No historical data available for {ticker}")
+                return None
+
+            # Create the plot
+            plt.figure(figsize=(10, 6))
+            plt.plot(hist.index, hist['Close'], label=f'{ticker} Close Price')
+            plt.title(f'{ticker} Stock Performance - {period}')
+            plt.xlabel('Date')
+            plt.ylabel('Price (USD)')
+            plt.legend()
+            plt.grid(True)
+            
+            # Rotate and align the tick labels so they look better
+            plt.gcf().autofmt_xdate()
+            
+            # Save the plot
+            filename = f"{ticker}_performance_{period}.png"
+            plt.savefig(filename)
+            plt.close()
+            
+            return filename
+        
+        except Exception as e:
+            print(f"Error plotting stock performance for {ticker}: {e}")
+            return None
+
+    def generate_portfolio_performance_graph(self):
+        """
+        Generate a graph showing portfolio value over time
+        
+        Returns:
+            str: Path to saved graph image
+        """
+        try:
+            # Collect historical data for all holdings
+            portfolio_history = {}
+            for ticker in self.holdings.keys():
+                stock = yf.Ticker(ticker)
+                hist = stock.history(period='1mo')
+                
+                if not hist.empty:
+                    portfolio_history[ticker] = hist['Close']
+            
+            # Create the plot
+            plt.figure(figsize=(12, 7))
+            
+            for ticker, prices in portfolio_history.items():
+                plt.plot(prices.index, prices, label=ticker)
+            
+            plt.title('Portfolio Stock Performance')
+            plt.xlabel('Date')
+            plt.ylabel('Price (USD)')
+            plt.legend()
+            plt.grid(True)
+            plt.gcf().autofmt_xdate()
+            
+            # Save the plot
+            filename = "portfolio_performance.png"
+            plt.savefig(filename)
+            plt.close()
+            
+            return filename
+        
+        except Exception as e:
+            print(f"Error generating portfolio performance graph: {e}")
+            return None
+
+    # Add this method to the view_portfolio method
     def view_portfolio(self):
         performance = self.calculate_portfolio_performance()
-        return {
-            "balance": self.balance,
-            "holdings": {ticker: details["shares"] for ticker, details in performance["current_holdings"].items()},
-            "performance": performance
-        }
+        stock_graphs = {ticker: self.plot_stock_performance(ticker) for ticker in self.holdings.keys()}
+        portfolio_graph = self.generate_portfolio_performance_graph()
+
+        # Format output
+        print("\nYour Portfolio Summary:")
+        print("-------------------------")
+        print(f"Balance: ${self.balance:,.2f}\n")
+
+        if self.holdings:
+            print("Holdings:")
+            for ticker, details in performance["current_holdings"].items():
+                print(f"  - {ticker}: ")
+                print(f"    - Shares: {details['shares']}")
+                print(f"    - Average Cost: ${details['avg_cost']:.2f}")
+                print(f"    - Current Price: ${details['current_price']:.2f}")
+                print(f"    - Total Cost: ${details['total_cost']:.2f}")
+                print(f"    - Current Value: ${details['current_value']:.2f}")
+                print(f"    - Profit/Loss: ${details['profit_loss']:.2f} ({details['return_percentage']:.2f}%)\n")
+        else:
+            print("No holdings yet.\n")
+
+        print(f"Total Portfolio Value: ${performance['total_portfolio_value']:.2f}")
+        print(f"Total Return Percentage: {performance['total_return_percentage']:.2f}%\n")
+
+        print("Graphs:")
+        for ticker, graph in stock_graphs.items():
+            print(f"  - {ticker} Performance: {graph}")
+        print(f"  - Portfolio Performance: {portfolio_graph}")
+        print("-------------------------\n")
 
     def add_money(self, amount):
         self.balance += amount
