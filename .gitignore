@@ -4,3 +4,4 @@ __pycache__/
 # Ignore JSON account data file
 account_data.json
 .env
+tempCodeRunnerFile.py
